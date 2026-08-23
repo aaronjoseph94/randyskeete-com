@@ -1,10 +1,22 @@
-/** JSON responses and same-origin checks for mutating routes. */
+/**
+ * JSON responses, body parsing, client IP, and same-origin checks for mutations.
+ */
 import { MAX_BODY_BYTES } from "./constants";
 
 const API_HEADERS = {
   "Content-Type": "application/json; charset=utf-8",
   "X-Content-Type-Options": "nosniff",
 };
+
+/** Allowed hostnames for mutating Origin (browser CSRF mitigation). */
+const ALLOWED_ORIGINS = new Set([
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+  "http://localhost:8888",
+  "http://127.0.0.1:8888",
+  "https://randyskeete.com",
+  "https://www.randyskeete.com",
+]);
 
 export function json(data: unknown, status = 200, extra: HeadersInit = {}) {
   return new Response(JSON.stringify(data), {
@@ -28,18 +40,18 @@ export function jsonNoStore(data: unknown, status = 200, extra: HeadersInit = {}
   });
 }
 
+/**
+ * Require an explicit Origin for mutations.
+ * Preview deploys under *.netlify.app are allowed when they match this project slug.
+ */
 export function originAllowed(req: Request) {
   const origin = req.headers.get("origin");
-  if (!origin) return true;
+  if (!origin) return false;
+  if (ALLOWED_ORIGINS.has(origin)) return true;
   try {
-    const { hostname } = new URL(origin);
-    return (
-      hostname === "localhost" ||
-      hostname === "127.0.0.1" ||
-      hostname === "randyskeete.com" ||
-      hostname === "www.randyskeete.com" ||
-      hostname.endsWith(".netlify.app")
-    );
+    const { hostname, protocol } = new URL(origin);
+    if (protocol !== "https:") return false;
+    return hostname === "famous-griffin-b0f5c9.netlify.app" || hostname.endsWith("--famous-griffin-b0f5c9.netlify.app");
   } catch {
     return false;
   }

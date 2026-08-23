@@ -1,6 +1,6 @@
 /**
  * Client helpers for the preaching-location API.
- * The footer editor uses a one-shot POST (password + text) — no password is stored in the browser.
+ * The footer editor uses a one-shot POST (password + text) — nothing is stored in the browser.
  */
 import type { PreachingRecord } from "../lib/types";
 
@@ -20,12 +20,11 @@ export async function getPreaching(signal?: AbortSignal) {
 
 /**
  * Password-gated location update for the footer editor.
- * Rate-limited on the server; does not create a lasting browser session.
+ * Rate-limited on the server; does not create a browser session cookie.
  */
 export async function updateLocation(password: string, text: string) {
   const response = await fetch("/api/preaching", {
     method: "POST",
-    credentials: "include",
     headers: JSON_HEADERS,
     body: JSON.stringify({ password, text }),
   });

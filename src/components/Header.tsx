@@ -16,9 +16,9 @@ export function Header({ location, loading = false }: Props) {
   return (
     <header className="site-header">
       <div className="menu-bar">
-        <a className="brand" href="#top">
+        <a className="brand" href="#top" aria-label="RandySkeete.com home">
           <img className="brand-mark" src={logoMark} alt="" width="128" height="128" />
-          <span className="brand-word">
+          <span className="brand-word" aria-hidden="true">
             RandySkeete<span className="brand-tld">.com</span>
           </span>
         </a>

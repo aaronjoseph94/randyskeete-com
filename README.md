@@ -10,6 +10,15 @@ This site is not owned, maintained, or endorsed by Elder Randy Skeete.
 - Netlify Functions + Blobs (sermons cache, preaching location, rate limits)
 - YouTube Data API v3
 
+## Project layout
+
+```
+src/                  React UI (components, api clients, styles)
+netlify/functions/    Server endpoints (/api/sermons, /api/preaching)
+netlify/functions/_shared/  Shared constants, storage, auth helpers
+public/               Favicons and static assets
+```
+
 ## Local development
 
 ```bash
@@ -25,7 +34,7 @@ Environment variables (never commit `.env`):
 | `YOUTUBE_API_KEY` | YouTube Data API v3 key |
 | `ADMIN_PASSWORD` | Password for the footer “Update location” editor |
 
-The editor exchanges the password for an HttpOnly session cookie, saves, then clears the cookie. The password is not kept in `sessionStorage` or `localStorage`.
+The footer editor sends the password and new location in one POST. The password is not kept in `sessionStorage`, `localStorage`, or a session cookie.
 
 ## Scripts
 
@@ -42,4 +51,6 @@ Configured for Netlify (`netlify.toml`). Set the same env vars in the Netlify UI
 
 - Editor password is compared with a constant-time check and gated by IP rate limits.
 - Mutating `/api/preaching` requests require an allowed `Origin`.
+- Location text is sanitized (control characters stripped) and length-capped.
+- Production CSP omits `'unsafe-inline'` from `script-src` (also blocks Netlify’s badge HUD script).
 - Known `npm audit` findings under `@netlify/vite-plugin` (local-dev image tooling / `sharp`) are transitive and not shipped in the production browser bundle. Avoid `npm audit fix --force` (it downgrades the plugin).
