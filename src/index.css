@@ -1,19 +1,19 @@
 /*
  * RandySkeete.com — global styles.
- * Inter typeface, white canvas, navy/gold accents.
+ * Inter typeface, white canvas, blue accents.
  */
 
 :root {
   --bg: #ffffff;
   --paper: #ffffff;
-  --ink: #1a2130;
-  --muted: #5b6372;
-  --navy: #16233f;
-  --navy-deep: #0e1830;
-  --gold: #a8823c;
-  --gold-soft: #f3ead3;
-  --line: rgba(22, 35, 63, 0.12);
-  --shadow: 0 10px 28px rgba(14, 24, 48, 0.08);
+  --ink: #0f172a;
+  --muted: #64748b;
+  --blue: #1d4ed8;
+  --blue-deep: #1e3a8a;
+  --blue-soft: #eff6ff;
+  --live: #22c55e;
+  --line: rgba(29, 78, 216, 0.14);
+  --shadow: 0 10px 28px rgba(30, 58, 138, 0.08);
   --sans: "Inter", system-ui, -apple-system, sans-serif;
   color: var(--ink);
   background: var(--bg);
@@ -51,7 +51,7 @@ body {
 }
 
 a {
-  color: var(--navy);
+  color: var(--blue);
 }
 
 img {
@@ -104,7 +104,7 @@ textarea {
   align-items: center;
   gap: 12px;
   text-decoration: none;
-  color: var(--navy);
+  color: var(--blue-deep);
   min-width: 0;
 }
 
@@ -113,8 +113,8 @@ textarea {
   height: 44px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid var(--gold);
-  box-shadow: 0 0 0 3px rgba(168, 130, 60, 0.16);
+  border: 2px solid var(--blue);
+  box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.14);
   flex-shrink: 0;
 }
 
@@ -130,7 +130,7 @@ textarea {
 }
 
 .brand-tld {
-  color: var(--gold);
+  color: var(--blue);
 }
 
 .brand-tag {
@@ -150,7 +150,7 @@ textarea {
 }
 
 .nav-link {
-  color: var(--navy);
+  color: var(--blue-deep);
   text-decoration: none;
   font-weight: 600;
   font-size: 0.88rem;
@@ -158,56 +158,85 @@ textarea {
   padding: 8px 14px;
   border-radius: 999px;
   border: 1px solid var(--line);
-  background: #f7f7f7;
+  background: var(--blue-soft);
   transition: background 140ms ease, border-color 140ms ease, color 140ms ease;
 }
 
 .nav-link:hover {
-  background: var(--gold-soft);
-  border-color: color-mix(in srgb, var(--gold) 45%, transparent);
-  color: var(--navy-deep);
+  background: #dbeafe;
+  border-color: color-mix(in srgb, var(--blue) 45%, transparent);
+  color: var(--blue-deep);
 }
 
 .nav-link:focus-visible {
-  outline: 2px solid var(--gold);
+  outline: 2px solid var(--blue);
   outline-offset: 2px;
 }
 
 /* ---------- Featured "This week" widget ---------- */
 
 .widget {
-  margin-top: 18px;
-  background: linear-gradient(180deg, #fbf8f1 0%, #ffffff 100%);
+  margin-top: 14px;
+  background: var(--blue-soft);
   border: 1px solid var(--line);
-  border-left: 4px solid var(--gold);
-  border-radius: 16px;
-  padding: 22px 24px;
-  box-shadow: var(--shadow);
+  border-left: 3px solid var(--blue);
+  border-radius: 12px;
+  padding: 10px 14px;
+  box-shadow: none;
 }
 
 .widget-top {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   gap: 12px;
 }
 
-.widget h2 {
-  font-size: clamp(1.35rem, 3.4vw, 1.75rem);
-  line-height: 1.25;
-  max-width: 28ch;
-  letter-spacing: -0.02em;
-  font-weight: 700;
+.widget-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   margin: 0;
-  color: var(--navy);
+  min-width: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  color: var(--blue-deep);
+}
+
+.widget-title-text {
+  min-width: 0;
+}
+
+.live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--live);
+  flex-shrink: 0;
+  box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.55);
+  animation: live-pulse 1.6s ease-out infinite;
+}
+
+@keyframes live-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.55);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(34, 197, 94, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+  }
 }
 
 .widget-body {
-  margin: 14px 0 0;
+  margin: 8px 0 0;
   white-space: pre-wrap;
-  font-size: 1.05rem;
+  font-size: 0.95rem;
   color: var(--ink);
-  line-height: 1.55;
+  line-height: 1.45;
 }
 
 .login-btn,
@@ -216,11 +245,11 @@ textarea {
   flex-shrink: 0;
   border: 0;
   border-radius: 999px;
-  background: var(--navy);
+  background: var(--blue);
   color: #ffffff;
-  padding: 8px 16px;
+  padding: 6px 14px;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.84rem;
   cursor: pointer;
   transition: background 140ms ease;
 }
@@ -228,23 +257,24 @@ textarea {
 .login-btn:hover,
 .widget button[type="submit"]:hover,
 .edit-form button:hover {
-  background: var(--navy-deep);
+  background: var(--blue-deep);
 }
 
 .login-btn.secondary {
-  background: var(--gold-soft);
-  color: var(--navy);
+  background: #ffffff;
+  color: var(--blue-deep);
+  border: 1px solid var(--line);
 }
 
 .login-btn.secondary:hover {
-  background: #e8d9b4;
+  background: #dbeafe;
 }
 
 .login-form,
 .edit-form {
   display: grid;
   gap: 10px;
-  margin-top: 14px;
+  margin-top: 10px;
 }
 
 .login-form {
@@ -254,12 +284,12 @@ textarea {
 /* ---------- Hero ---------- */
 
 .hero {
-  padding: 36px 0 18px;
+  padding: 32px 0 18px;
 }
 
 .eyebrow {
   margin: 0 0 10px;
-  color: var(--gold);
+  color: var(--blue);
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.2em;
@@ -272,7 +302,7 @@ textarea {
   font-weight: 700;
   letter-spacing: -0.025em;
   margin: 0;
-  color: var(--navy);
+  color: var(--blue-deep);
 }
 
 .hero h1 {
@@ -297,7 +327,7 @@ textarea {
   position: relative;
   overflow: hidden;
   border-radius: 16px;
-  background: var(--navy-deep);
+  background: var(--blue-deep);
   box-shadow: var(--shadow);
   aspect-ratio: 16 / 9;
 }
@@ -313,7 +343,7 @@ textarea {
 .player-frame.empty {
   display: grid;
   place-items: center;
-  color: #f5f0e4;
+  color: #eff6ff;
   aspect-ratio: 16 / 9;
 }
 
@@ -344,7 +374,7 @@ textarea {
 
 input:focus-visible,
 textarea:focus-visible {
-  outline: 2px solid var(--gold);
+  outline: 2px solid var(--blue);
   outline-offset: 1px;
 }
 
@@ -405,7 +435,7 @@ textarea:focus-visible {
 }
 
 .sermon-card.selected {
-  outline: 2px solid var(--gold);
+  outline: 2px solid var(--blue);
 }
 
 .sermon-card img,
@@ -413,7 +443,7 @@ textarea:focus-visible {
   width: 100%;
   aspect-ratio: 16 / 9;
   object-fit: cover;
-  background: var(--navy-deep);
+  background: var(--blue-deep);
   display: block;
 }
 
@@ -424,7 +454,7 @@ textarea:focus-visible {
 }
 
 .sermon-copy strong {
-  color: var(--navy);
+  color: var(--blue-deep);
   font-size: 0.95rem;
   font-weight: 600;
   line-height: 1.35;
@@ -457,7 +487,7 @@ textarea:focus-visible {
 
 .saved {
   margin: 0;
-  color: #215c38;
+  color: #15803d;
 }
 
 /* ---------- Footer ---------- */
@@ -477,7 +507,7 @@ textarea:focus-visible {
 
 .footer-col h3 {
   margin: 0 0 6px;
-  color: var(--navy);
+  color: var(--blue-deep);
   font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.16em;
@@ -491,15 +521,15 @@ textarea:focus-visible {
 
 .footer-link {
   font-weight: 600;
-  color: var(--gold);
+  color: var(--blue);
   text-decoration: none;
-  border-bottom: 1px solid rgba(168, 130, 60, 0.4);
+  border-bottom: 1px solid rgba(29, 78, 216, 0.35);
   padding-bottom: 1px;
   word-break: break-word;
 }
 
 .footer-link:hover {
-  border-bottom-color: var(--gold);
+  border-bottom-color: var(--blue);
 }
 
 .footer-note {
@@ -512,7 +542,11 @@ textarea:focus-visible {
 
 @media (min-width: 720px) {
   .footer-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .widget-title-text {
+    white-space: nowrap;
   }
 }
 
@@ -523,7 +557,6 @@ textarea:focus-visible {
     row-gap: 8px;
   }
 
-  /* One compact scrollable row keeps the sticky header short on phones. */
   .nav {
     width: 100%;
     gap: 6px;
@@ -543,8 +576,6 @@ textarea:focus-visible {
     flex: 0 0 auto;
     padding: 7px 12px;
     font-size: 0.82rem;
-    background: #f7f7f7;
-    border-color: var(--line);
     white-space: nowrap;
   }
 
@@ -565,12 +596,12 @@ textarea:focus-visible {
   }
 
   .widget {
-    margin-top: 14px;
-    padding: 18px;
+    margin-top: 12px;
+    padding: 10px 12px;
   }
 
-  .widget h2 {
-    max-width: none;
+  .widget-title {
+    font-size: 0.88rem;
   }
 
   .login-form {

@@ -101,10 +101,13 @@ export function PreachingWidget() {
   return (
     <aside id="this-week" className="widget">
       <div className="widget-top">
-        <div>
-          <p className="eyebrow">This week</p>
-          <h2>Where is Elder Randy Skeete preaching this week?</h2>
-        </div>
+        <h2 className="widget-title">
+          <span className="live-dot" aria-hidden="true" />
+          <span className="sr-only">Live. </span>
+          <span className="widget-title-text">
+            Where is Elder Randy Skeete preaching this week?
+          </span>
+        </h2>
         {!unlocked ? (
           <button
             type="button"

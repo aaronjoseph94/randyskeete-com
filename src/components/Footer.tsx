@@ -10,21 +10,6 @@ export function Footer() {
           </a>
         </div>
         <div className="footer-col">
-          <h3>Go deeper</h3>
-          <p>
-            Explore the complete published writings of Ellen G. White — books,
-            letters, and periodicals — freely available online.
-          </p>
-          <a
-            className="footer-link"
-            href="https://egwwritings.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read at egwwritings.org
-          </a>
-        </div>
-        <div className="footer-col">
           <h3>About this site</h3>
           <p className="disclaimer">
             This website is not owned or maintained by Elder Randy Skeete. It is
