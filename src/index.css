@@ -1,22 +1,25 @@
 /*
- * RandySkeete.com — global styles.
- * Navy blue scheme: opaque full-width navy menu bar over a light navy-tinted canvas.
+ * RandySkeete.com — warm cream canvas with forest-teal accents.
+ * Palette inspired by soft dashboard UI: cream surfaces, rounded cards, teal depth.
  */
 
 :root {
-  --bg: #f4f7fb;
-  --surface: #ffffff;
-  --ink: #0d2149;
-  --muted: #5a6a83;
-  --navy: #0d2149;
-  --navy-deep: #081735;
-  --navy-mid: #1b3a6b;
-  --navy-light: #8fb4e6;
-  --navy-soft: #e7edf7;
-  --live: #22c55e;
-  --line: rgba(13, 33, 73, 0.12);
-  --shadow: 0 10px 28px rgba(13, 33, 73, 0.08);
-  --radius: 16px;
+  --bg: #f8f7f2;
+  --surface: #fcfbf7;
+  --surface-raised: #ffffff;
+  --ink: #222222;
+  --muted: #666666;
+  --teal: #175354;
+  --teal-deep: #0f3f40;
+  --teal-mid: #4d8f8f;
+  --teal-soft: #d8e9e9;
+  --teal-pale: #b2d8d8;
+  --neutral: #ebe9e1;
+  --live: #2f9e6f;
+  --line: rgba(23, 83, 84, 0.12);
+  --shadow: 0 12px 32px rgba(23, 83, 84, 0.08);
+  --shadow-soft: 0 4px 18px rgba(23, 83, 84, 0.06);
+  --radius: 18px;
   --sans: "Inter", system-ui, -apple-system, sans-serif;
   color: var(--ink);
   background: var(--bg);
@@ -39,7 +42,10 @@ html {
 body {
   margin: 0;
   min-width: 320px;
-  background: var(--bg);
+  background:
+    radial-gradient(circle at top right, rgba(178, 216, 216, 0.22), transparent 28%),
+    radial-gradient(circle at top left, rgba(216, 233, 233, 0.35), transparent 24%),
+    var(--bg);
   -webkit-text-size-adjust: 100%;
 }
 
@@ -50,11 +56,11 @@ body {
 #top,
 #watch,
 #sermons {
-  scroll-margin-top: 96px;
+  scroll-margin-top: 104px;
 }
 
 a {
-  color: var(--navy-mid);
+  color: var(--teal);
 }
 
 img {
@@ -86,21 +92,22 @@ textarea {
   padding: 0 20px 64px;
 }
 
-/* ---------- Menu bar: full-width, opaque navy ---------- */
+/* ---------- Header: light card bar on cream ---------- */
 
 .site-header {
   position: sticky;
   top: 0;
   z-index: 20;
   width: 100%;
-  background: var(--navy);
-  border-bottom: 1px solid var(--navy-deep);
+  background: rgba(248, 247, 242, 0.92);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--neutral);
 }
 
 .menu-bar {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 10px 20px;
+  padding: 12px 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -112,7 +119,7 @@ textarea {
   align-items: center;
   gap: 11px;
   text-decoration: none;
-  color: #ffffff;
+  color: var(--ink);
   flex-shrink: 0;
 }
 
@@ -120,6 +127,7 @@ textarea {
   width: 42px;
   height: 42px;
   border-radius: 50%;
+  box-shadow: var(--shadow-soft);
 }
 
 .brand-word {
@@ -131,7 +139,7 @@ textarea {
 }
 
 .brand-tld {
-  color: var(--navy-light);
+  color: var(--teal-mid);
 }
 
 .status-chip {
@@ -140,16 +148,17 @@ textarea {
   gap: 8px;
   margin: 0;
   min-width: 0;
-  padding: 7px 14px;
+  padding: 8px 16px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: var(--surface-raised);
+  border: 1px solid var(--neutral);
+  box-shadow: var(--shadow-soft);
   font-size: 0.88rem;
   line-height: 1.3;
 }
 
 .status-label {
-  color: var(--navy-light);
+  color: var(--teal-mid);
   font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -158,8 +167,8 @@ textarea {
 }
 
 .status-place {
-  color: #ffffff;
-  font-weight: 600;
+  color: var(--teal);
+  font-weight: 650;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -173,19 +182,19 @@ textarea {
   border-radius: 50%;
   background: var(--live);
   flex-shrink: 0;
-  box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.6);
+  box-shadow: 0 0 0 0 rgba(47, 158, 111, 0.55);
   animation: live-pulse 1.6s ease-out infinite;
 }
 
 @keyframes live-pulse {
   0% {
-    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.6);
+    box-shadow: 0 0 0 0 rgba(47, 158, 111, 0.55);
   }
   70% {
-    box-shadow: 0 0 0 9px rgba(34, 197, 94, 0);
+    box-shadow: 0 0 0 9px rgba(47, 158, 111, 0);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+    box-shadow: 0 0 0 0 rgba(47, 158, 111, 0);
   }
 }
 
@@ -202,7 +211,7 @@ textarea {
 /* ---------- Hero ---------- */
 
 .hero {
-  padding: 26px 0 14px;
+  padding: 28px 0 16px;
 }
 
 .hero h1,
@@ -215,21 +224,22 @@ textarea {
 }
 
 .hero h1 {
-  font-size: clamp(1.35rem, 3vw, 1.75rem);
+  font-size: clamp(1.4rem, 3vw, 1.85rem);
   line-height: 1.2;
 }
 
 /* ---------- Player ---------- */
 
 .watch {
-  margin-top: 8px;
+  margin-top: 10px;
 }
 
 .player-frame {
   position: relative;
   overflow: hidden;
   border-radius: var(--radius);
-  background: var(--navy-deep);
+  background: var(--teal-deep);
+  border: 1px solid var(--neutral);
   box-shadow: var(--shadow);
   aspect-ratio: 16 / 9;
 }
@@ -245,14 +255,19 @@ textarea {
 .player-frame.empty {
   display: grid;
   place-items: center;
-  color: var(--navy-soft);
+  color: var(--teal-soft);
   aspect-ratio: 16 / 9;
   padding: 16px;
   text-align: center;
 }
 
 .player-meta {
-  padding: 16px 2px 0;
+  margin-top: 16px;
+  padding: 18px 20px;
+  border-radius: calc(var(--radius) - 2px);
+  background: var(--surface-raised);
+  border: 1px solid var(--neutral);
+  box-shadow: var(--shadow-soft);
 }
 
 .player-meta h2 {
@@ -268,10 +283,10 @@ textarea {
 input,
 textarea {
   width: 100%;
-  border: 1px solid var(--line);
+  border: 1px solid var(--neutral);
   border-radius: 12px;
   padding: 11px 12px;
-  background: var(--surface);
+  background: var(--surface-raised);
   color: var(--ink);
 }
 
@@ -279,12 +294,8 @@ input:focus-visible,
 textarea:focus-visible,
 button:focus-visible,
 a:focus-visible {
-  outline: 2px solid var(--navy-mid);
+  outline: 2px solid var(--teal-mid);
   outline-offset: 2px;
-}
-
-.site-header a:focus-visible {
-  outline-color: #ffffff;
 }
 
 /* ---------- Latest Sermons ---------- */
@@ -311,15 +322,16 @@ a:focus-visible {
 }
 
 .sermon-card {
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 14px;
+  background: var(--surface-raised);
+  border: 1px solid var(--neutral);
+  border-radius: 16px;
   overflow: hidden;
-  transition: transform 160ms ease, box-shadow 160ms ease;
+  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
 }
 
 .sermon-card:hover {
   transform: translateY(-3px);
+  border-color: var(--teal-pale);
   box-shadow: var(--shadow);
 }
 
@@ -334,7 +346,8 @@ a:focus-visible {
 }
 
 .sermon-card.selected {
-  outline: 2px solid var(--navy-mid);
+  outline: 2px solid var(--teal);
+  border-color: var(--teal-mid);
 }
 
 .sermon-card img,
@@ -342,7 +355,7 @@ a:focus-visible {
   width: 100%;
   aspect-ratio: 16 / 9;
   object-fit: cover;
-  background: var(--navy-deep);
+  background: var(--teal-deep);
   display: block;
 }
 
@@ -392,8 +405,11 @@ a:focus-visible {
 
 .site-footer {
   margin-top: 64px;
-  padding-top: 28px;
-  border-top: 1px solid var(--line);
+  padding: 28px 22px 24px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--neutral);
+  box-shadow: var(--shadow-soft);
   color: var(--muted);
   font-size: 0.92rem;
 }
@@ -405,7 +421,7 @@ a:focus-visible {
 
 .footer-col h3 {
   margin: 0 0 6px;
-  color: var(--ink);
+  color: var(--teal);
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -419,9 +435,9 @@ a:focus-visible {
 
 .footer-link {
   font-weight: 600;
-  color: var(--navy-mid);
+  color: var(--teal);
   text-decoration: none;
-  border-bottom: 1px solid rgba(27, 58, 107, 0.35);
+  border-bottom: 1px solid rgba(23, 83, 84, 0.28);
   word-break: break-word;
 }
 
@@ -432,6 +448,8 @@ a:focus-visible {
   justify-content: space-between;
   gap: 10px;
   margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid var(--neutral);
 }
 
 .footer-note {
@@ -451,7 +469,7 @@ a:focus-visible {
 }
 
 .footer-update:hover {
-  color: var(--navy-mid);
+  color: var(--teal);
 }
 
 .location-editor {
@@ -461,14 +479,14 @@ a:focus-visible {
   max-width: 420px;
   padding: 14px;
   border-radius: 14px;
-  background: var(--surface);
-  border: 1px solid var(--line);
+  background: var(--surface-raised);
+  border: 1px solid var(--neutral);
 }
 
 .location-editor button[type="submit"] {
   border: 0;
   border-radius: 999px;
-  background: var(--navy);
+  background: var(--teal);
   color: #fff;
   padding: 10px 14px;
   font-weight: 600;
@@ -476,7 +494,7 @@ a:focus-visible {
 }
 
 .location-editor button[type="submit"]:hover {
-  background: var(--navy-mid);
+  background: var(--teal-deep);
 }
 
 .location-editor button[type="submit"]:disabled {
@@ -507,7 +525,6 @@ a:focus-visible {
 }
 
 @media (max-width: 620px) {
-  /* Stack the status chip under the logo so long church names stay readable. */
   .menu-bar {
     flex-wrap: wrap;
     gap: 8px;
@@ -541,6 +558,10 @@ a:focus-visible {
     padding: 20px 0 12px;
   }
 
+  .player-meta {
+    padding: 14px 16px;
+  }
+
   .sermons {
     margin-top: 36px;
   }
@@ -552,12 +573,13 @@ a:focus-visible {
 
   .site-footer {
     margin-top: 44px;
+    padding: 22px 16px 18px;
   }
 
   #top,
   #watch,
   #sermons {
-    scroll-margin-top: 132px;
+    scroll-margin-top: 140px;
   }
 }
 
