@@ -27,7 +27,6 @@ export default function App() {
     fetchSermons(controller.signal)
       .then((list) => {
         setSermons(list);
-        setSelected(list[0] ?? null);
       })
       .catch((err: unknown) => {
         if (controller.signal.aborted) return;
@@ -71,6 +70,7 @@ export default function App() {
           </section>
 
           <SermonGrid
+            key={loading ? "loading" : String(sermons.length)}
             sermons={sermons}
             selectedId={selected?.id ?? null}
             onSelect={handleSelect}

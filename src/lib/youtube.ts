@@ -15,14 +15,7 @@ export function channelUrl(channelId: string) {
   return `https://www.youtube.com/channel/${channelId}`;
 }
 
-export function safeThumbnail(url: string, videoId: string) {
-  const fallback = VIDEO_ID.test(videoId) ? `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg` : "";
-  try {
-    const parsed = new URL(url);
-    if (parsed.protocol !== "https:") return fallback;
-    if (parsed.hostname !== "i.ytimg.com" && parsed.hostname !== "img.youtube.com") return fallback;
-    return url;
-  } catch {
-    return fallback;
-  }
+/** Lightweight grid thumbnail (mqdefault) for faster page loads. */
+export function safeThumbnail(_url: string, videoId: string) {
+  return VIDEO_ID.test(videoId) ? `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg` : "";
 }

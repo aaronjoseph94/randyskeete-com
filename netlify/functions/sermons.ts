@@ -1,8 +1,8 @@
 /**
  * GET /api/sermons — playlist items with the *uploader* credited, never the playlist owner.
- * Results are cached in Blobs; CACHE_VERSION invalidates stale copies.
+ * Cached in Blobs; stale responses are served instantly while refresh runs in the background.
  */
-import type { Config } from "@netlify/functions";
+import type { Config, Context } from "@netlify/functions";
 import { CACHE_TTL_MS, CACHE_VERSION, PLAYLIST_ID, YOUTUBE_REFERER } from "./_shared/constants";
 import { env } from "./_shared/env";
 import { json } from "./_shared/http";
@@ -12,6 +12,12 @@ import type { Sermon } from "./_shared/types";
 const SKIP_TITLES = new Set(["private video", "deleted video"]);
 const VIDEO_ID = /^[\w-]{11}$/;
 const CHANNEL_ID = /^UC[\w-]{21,}$/;
+
+/** CDN + browser caching for the public sermon list. */
+const SERMON_CACHE_HEADERS = {
+  "Cache-Control": "public, max-age=300, stale-while-revalidate=3600",
+  "Netlify-CDN-Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
+};
 
 type CachePayload = {
   version: number;
@@ -40,17 +46,8 @@ type PlaylistResponse = {
   error?: { message?: string };
 };
 
-function safeThumbnail(url: string | undefined, videoId: string) {
-  const fallback = `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
-  if (!url) return fallback;
-  try {
-    const parsed = new URL(url);
-    if (parsed.protocol !== "https:") return fallback;
-    if (parsed.hostname !== "i.ytimg.com" && parsed.hostname !== "img.youtube.com") return fallback;
-    return url;
-  } catch {
-    return fallback;
-  }
+function thumbnailUrl(videoId: string) {
+  return `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`;
 }
 
 function mapItem(item: PlaylistItem): Sermon | null {
@@ -66,10 +63,7 @@ function mapItem(item: PlaylistItem): Sermon | null {
     id,
     title,
     publishedAt: snippet?.publishedAt ?? "",
-    thumbnail: safeThumbnail(
-      snippet?.thumbnails?.high?.url || snippet?.thumbnails?.medium?.url || snippet?.thumbnails?.default?.url,
-      id,
-    ),
+    thumbnail: thumbnailUrl(id),
     channelName,
     channelId: CHANNEL_ID.test(channelId) ? channelId : "",
   };
@@ -118,37 +112,50 @@ function isFresh(cached: CachePayload | null) {
   );
 }
 
-export default async () => {
+async function refreshPlaylist(apiKey: string) {
+  const sermons = sortByPublishedDesc(await fetchPlaylist(apiKey));
+  await writeJson("sermons", "playlist", {
+    version: CACHE_VERSION,
+    fetchedAt: Date.now(),
+    sermons,
+  });
+  return sermons;
+}
+
+function serve(sermons: Sermon[]) {
+  return json({ sermons }, 200, SERMON_CACHE_HEADERS);
+}
+
+export default async (_req: Request, context: Context) => {
   const cached = await readJson<CachePayload>("sermons", "playlist");
+
   if (isFresh(cached)) {
-    return json(
-      { sermons: sortByPublishedDesc(cached!.sermons) },
-      200,
-      { "Netlify-CDN-Cache-Control": "public, s-maxage=300, must-revalidate" },
-    );
+    return serve(cached!.sermons);
   }
 
-  // Drop a previous cache version so Blobs does not keep serving stale playlist JSON.
   if (cached && cached.version !== CACHE_VERSION) {
     await deleteKey("sermons", "playlist");
   }
 
   const apiKey = env("YOUTUBE_API_KEY");
+
+  // Serve stale data immediately; refresh in the background so users never wait on YouTube.
+  if (cached?.sermons?.length && cached.version === CACHE_VERSION) {
+    if (apiKey) {
+      context.waitUntil(refreshPlaylist(apiKey).catch(() => undefined));
+    }
+    return serve(cached.sermons);
+  }
+
   if (!apiKey) {
-    if (cached?.sermons?.length) return json({ sermons: sortByPublishedDesc(cached.sermons) });
+    if (cached?.sermons?.length) return serve(cached.sermons);
     return json({ error: "Sermons are temporarily unavailable." }, 500);
   }
 
   try {
-    const sermons = sortByPublishedDesc(await fetchPlaylist(apiKey));
-    await writeJson("sermons", "playlist", {
-      version: CACHE_VERSION,
-      fetchedAt: Date.now(),
-      sermons,
-    });
-    return json({ sermons });
+    return serve(await refreshPlaylist(apiKey));
   } catch {
-    if (cached?.sermons?.length) return json({ sermons: sortByPublishedDesc(cached.sermons) });
+    if (cached?.sermons?.length) return serve(cached.sermons);
     return json({ error: "Sermons are temporarily unavailable." }, 502);
   }
 };
