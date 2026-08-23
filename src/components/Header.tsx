@@ -1,5 +1,16 @@
 import portrait from "../assets/randy-skeete.jpg";
 
+const NAV = [
+  { href: "#this-week", label: "This Week" },
+  { href: "#watch", label: "Watch" },
+  { href: "#sermons", label: "Sermons" },
+  {
+    href: "https://egwwritings.org/",
+    label: "EGW Writings",
+    external: true,
+  },
+] as const;
+
 /** Site logo (circular portrait + wordmark) and primary navigation. */
 export function Header() {
   return (
@@ -14,11 +25,23 @@ export function Header() {
         </span>
       </a>
       <nav className="nav" aria-label="Primary">
-        <a href="#this-week">This Week</a>
-        <a href="#sermons">Sermons</a>
-        <a href="https://egwwritings.org/" target="_blank" rel="noopener noreferrer">
-          EGW Writings
-        </a>
+        {NAV.map((item) =>
+          "external" in item && item.external ? (
+            <a
+              key={item.href}
+              className="nav-link"
+              href={item.href}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {item.label}
+            </a>
+          ) : (
+            <a key={item.href} className="nav-link" href={item.href}>
+              {item.label}
+            </a>
+          ),
+        )}
       </nav>
     </header>
   );

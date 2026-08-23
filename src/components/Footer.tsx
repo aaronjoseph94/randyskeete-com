@@ -1,10 +1,14 @@
-import { Ornament } from "./Ornament";
-
 export function Footer() {
   return (
     <footer className="site-footer">
-      <Ornament />
       <div className="footer-grid">
+        <div className="footer-col">
+          <h3>Contact us</h3>
+          <p>Questions about this site or this week’s location?</p>
+          <a className="footer-link" href="mailto:truth.garment504@passinbox.com">
+            truth.garment504@passinbox.com
+          </a>
+        </div>
         <div className="footer-col">
           <h3>Go deeper</h3>
           <p>

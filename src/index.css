@@ -1,20 +1,19 @@
 /*
  * RandySkeete.com — global styles.
- * Inter typeface, ivory/navy/gold palette, and restrained Christian
- * ornamentation (a faint cross in the hero, small cross dividers).
+ * Inter typeface, white canvas, navy/gold accents.
  */
 
 :root {
-  --bg: #f7f5f0;
-  --paper: #fffdf8;
+  --bg: #ffffff;
+  --paper: #ffffff;
   --ink: #1a2130;
   --muted: #5b6372;
   --navy: #16233f;
   --navy-deep: #0e1830;
   --gold: #a8823c;
-  --gold-soft: #eadfc4;
+  --gold-soft: #f3ead3;
   --line: rgba(22, 35, 63, 0.12);
-  --shadow: 0 14px 34px rgba(14, 24, 48, 0.1);
+  --shadow: 0 10px 28px rgba(14, 24, 48, 0.08);
   --sans: "Inter", system-ui, -apple-system, sans-serif;
   color: var(--ink);
   background: var(--bg);
@@ -37,20 +36,18 @@ html {
 body {
   margin: 0;
   min-width: 320px;
-  /* Soft "light from above" wash at the top of the page. */
-  background:
-    radial-gradient(ellipse 90% 40% at 50% -5%, rgba(168, 130, 60, 0.14), transparent 70%),
-    var(--bg);
+  background: var(--bg);
 }
 
 #root {
   min-height: 100svh;
 }
 
+#top,
 #watch,
 #this-week,
 #sermons {
-  scroll-margin-top: 84px;
+  scroll-margin-top: 88px;
 }
 
 a {
@@ -97,9 +94,9 @@ textarea {
   justify-content: space-between;
   gap: 16px;
   padding: 12px 0;
-  background: color-mix(in srgb, var(--bg) 90%, transparent);
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
   backdrop-filter: blur(12px);
-  border-bottom: 1px solid transparent;
+  border-bottom: 1px solid var(--line);
 }
 
 .brand {
@@ -108,6 +105,7 @@ textarea {
   gap: 12px;
   text-decoration: none;
   color: var(--navy);
+  min-width: 0;
 }
 
 .brand-photo {
@@ -116,7 +114,8 @@ textarea {
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid var(--gold);
-  box-shadow: 0 0 0 3px rgba(168, 130, 60, 0.18);
+  box-shadow: 0 0 0 3px rgba(168, 130, 60, 0.16);
+  flex-shrink: 0;
 }
 
 .brand-text {
@@ -144,43 +143,118 @@ textarea {
 
 .nav {
   display: flex;
-  gap: 20px;
+  gap: 6px;
   align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
-.nav a {
+.nav-link {
   color: var(--navy);
   text-decoration: none;
-  font-weight: 550;
-  font-size: 0.93rem;
-  padding: 4px 0;
-  border-bottom: 2px solid transparent;
-  transition: border-color 140ms ease;
+  font-weight: 600;
+  font-size: 0.88rem;
+  letter-spacing: 0.01em;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: transparent;
+  transition: background 140ms ease, border-color 140ms ease, color 140ms ease;
 }
 
-.nav a:hover {
-  border-bottom-color: var(--gold);
+.nav-link:hover {
+  background: var(--gold-soft);
+  border-color: color-mix(in srgb, var(--gold) 35%, transparent);
+  color: var(--navy-deep);
+}
+
+.nav-link:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+/* ---------- Featured "This week" widget ---------- */
+
+.widget {
+  margin-top: 18px;
+  background: linear-gradient(180deg, #fbf8f1 0%, #ffffff 100%);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--gold);
+  border-radius: 16px;
+  padding: 22px 24px;
+  box-shadow: var(--shadow);
+}
+
+.widget-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.widget h2 {
+  font-size: clamp(1.35rem, 3.4vw, 1.75rem);
+  line-height: 1.25;
+  max-width: 28ch;
+  letter-spacing: -0.02em;
+  font-weight: 700;
+  margin: 0;
+  color: var(--navy);
+}
+
+.widget-body {
+  margin: 14px 0 0;
+  white-space: pre-wrap;
+  font-size: 1.05rem;
+  color: var(--ink);
+  line-height: 1.55;
+}
+
+.login-btn,
+.widget button[type="submit"],
+.edit-form button {
+  flex-shrink: 0;
+  border: 0;
+  border-radius: 999px;
+  background: var(--navy);
+  color: #ffffff;
+  padding: 8px 16px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 140ms ease;
+}
+
+.login-btn:hover,
+.widget button[type="submit"]:hover,
+.edit-form button:hover {
+  background: var(--navy-deep);
+}
+
+.login-btn.secondary {
+  background: var(--gold-soft);
+  color: var(--navy);
+}
+
+.login-btn.secondary:hover {
+  background: #e8d9b4;
+}
+
+.login-form,
+.edit-form {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.login-form {
+  grid-template-columns: 1fr auto;
 }
 
 /* ---------- Hero ---------- */
 
 .hero {
-  position: relative;
-  padding: 44px 0 26px;
-}
-
-/* Faint cross standing behind the hero copy. */
-.hero::after {
-  content: "";
-  position: absolute;
-  top: -10px;
-  right: 2%;
-  width: 190px;
-  height: 300px;
-  pointer-events: none;
-  opacity: 0.055;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 190'%3E%3Cpath d='M60 8v174M22 58h76' stroke='%2316233f' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E")
-    center / contain no-repeat;
+  padding: 36px 0 18px;
 }
 
 .eyebrow {
@@ -193,7 +267,6 @@ textarea {
 }
 
 .hero h1,
-.widget h2,
 .sermons h2,
 .player-meta h2 {
   font-weight: 700;
@@ -203,7 +276,7 @@ textarea {
 }
 
 .hero h1 {
-  font-size: clamp(2rem, 6.5vw, 3.6rem);
+  font-size: clamp(2rem, 6.5vw, 3.4rem);
   line-height: 1.06;
   max-width: 16ch;
 }
@@ -214,37 +287,10 @@ textarea {
   font-size: 1.04rem;
 }
 
-/* ---------- Ornament (cross divider) ---------- */
-
-.ornament {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  color: var(--gold);
-  margin: 22px 0 4px;
-  max-width: 320px;
-}
-
-.ornament-line {
-  flex: 1;
-  height: 1px;
-  background: linear-gradient(to right, transparent, rgba(168, 130, 60, 0.55));
-}
-
-.ornament-line:last-child {
-  background: linear-gradient(to left, transparent, rgba(168, 130, 60, 0.55));
-}
-
-.site-footer .ornament {
-  margin: 0 auto 26px;
-}
-
 /* ---------- Player ---------- */
 
-.layout {
-  display: grid;
-  gap: 22px;
-  margin-top: 10px;
+.watch {
+  margin-top: 8px;
 }
 
 .player-frame {
@@ -281,82 +327,9 @@ textarea {
 }
 
 .player-meta p,
-.widget-body,
 .sermon-copy span,
 .status {
   color: var(--muted);
-}
-
-/* ---------- "This week" widget ---------- */
-
-.widget {
-  position: relative;
-  background: var(--paper);
-  border: 1px solid var(--line);
-  border-top: 3px solid var(--gold);
-  border-radius: 14px;
-  padding: 20px;
-  box-shadow: var(--shadow);
-}
-
-.widget-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 12px;
-}
-
-.widget h2 {
-  font-size: 1.28rem;
-  line-height: 1.25;
-  max-width: 18ch;
-  letter-spacing: -0.015em;
-}
-
-.login-btn,
-.widget button[type="submit"],
-.edit-form button {
-  flex-shrink: 0;
-  border: 0;
-  border-radius: 999px;
-  background: var(--navy);
-  color: #fffdf8;
-  padding: 8px 16px;
-  font-weight: 600;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: background 140ms ease;
-}
-
-.login-btn:hover,
-.widget button[type="submit"]:hover,
-.edit-form button:hover {
-  background: var(--navy-deep);
-}
-
-.login-btn.secondary {
-  background: var(--gold-soft);
-  color: var(--navy);
-}
-
-.login-btn.secondary:hover {
-  background: #e0d2ac;
-}
-
-.widget-body {
-  margin: 14px 0 0;
-  white-space: pre-wrap;
-}
-
-.login-form,
-.edit-form {
-  display: grid;
-  gap: 10px;
-  margin-top: 14px;
-}
-
-.login-form {
-  grid-template-columns: 1fr auto;
 }
 
 input,
@@ -522,6 +495,7 @@ textarea:focus-visible {
   text-decoration: none;
   border-bottom: 1px solid rgba(168, 130, 60, 0.4);
   padding-bottom: 1px;
+  word-break: break-word;
 }
 
 .footer-link:hover {
@@ -536,46 +510,49 @@ textarea:focus-visible {
 
 /* ---------- Responsive ---------- */
 
-@media (min-width: 640px) {
+@media (min-width: 720px) {
   .footer-grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
-@media (min-width: 900px) {
-  .layout {
-    grid-template-columns: minmax(0, 1.7fr) minmax(280px, 0.9fr);
-    align-items: start;
-  }
-
-  .widget {
-    position: sticky;
-    top: 84px;
-  }
-}
-
-@media (max-width: 640px) {
-  /* Stack the nav under the brand so nothing collides on narrow screens. */
+@media (max-width: 720px) {
   .site-header {
     flex-wrap: wrap;
-    padding: 10px 0 6px;
-    row-gap: 2px;
+    padding: 10px 0 10px;
+    row-gap: 8px;
   }
 
+  /* One compact scrollable row keeps the sticky header short on phones. */
   .nav {
     width: 100%;
-    gap: 18px;
+    gap: 6px;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 2px;
   }
 
-  .nav a {
-    font-size: 0.86rem;
+  .nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .nav-link {
+    flex: 0 0 auto;
+    padding: 7px 12px;
+    font-size: 0.82rem;
+    background: #f7f7f7;
+    border-color: var(--line);
     white-space: nowrap;
   }
 
+  #top,
   #watch,
   #this-week,
   #sermons {
-    scroll-margin-top: 116px;
+    scroll-margin-top: 108px;
   }
 
   .brand-photo {
@@ -587,18 +564,20 @@ textarea:focus-visible {
     font-size: 1.08rem;
   }
 
+  .widget {
+    margin-top: 14px;
+    padding: 18px;
+  }
+
+  .widget h2 {
+    max-width: none;
+  }
+
   .login-form {
     grid-template-columns: 1fr;
   }
 
   .hero {
-    padding-top: 24px;
-  }
-
-  .hero::after {
-    width: 120px;
-    height: 200px;
-    right: -4%;
-    opacity: 0.045;
+    padding-top: 28px;
   }
 }
