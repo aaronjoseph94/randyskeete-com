@@ -157,14 +157,14 @@ textarea {
   letter-spacing: 0.01em;
   padding: 8px 14px;
   border-radius: 999px;
-  border: 1px solid transparent;
-  background: transparent;
+  border: 1px solid var(--line);
+  background: #f7f7f7;
   transition: background 140ms ease, border-color 140ms ease, color 140ms ease;
 }
 
 .nav-link:hover {
   background: var(--gold-soft);
-  border-color: color-mix(in srgb, var(--gold) 35%, transparent);
+  border-color: color-mix(in srgb, var(--gold) 45%, transparent);
   color: var(--navy-deep);
 }
 
