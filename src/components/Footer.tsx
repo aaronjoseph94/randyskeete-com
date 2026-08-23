@@ -76,9 +76,9 @@ export function Footer({ location, onUpdated }: Props) {
         <div className="footer-col">
           <h3>About</h3>
           <p className="disclaimer">
-            This website is not owned or maintained by Elder Randy Skeete. It is
-            created by people who follow him and listen to his messages. It is
-            not endorsed by Elder Skeete.
+            This site was created by individuals who have been blessed by the
+            ministry of Elder Randy Skeete. It is an independent effort, not
+            owned, maintained, or endorsed by Elder Skeete.
           </p>
         </div>
       </div>
