@@ -56,31 +56,34 @@ export default function App() {
   }
 
   return (
-    <div className="page">
+    <>
+      {/* Header sits outside .page so the navy bar spans the full viewport width. */}
       <Header location={preaching?.text ?? "TBA"} loading={preachingLoading} />
 
-      <main>
-        <section className="hero" id="top">
-          <h1>Messages by Elder Randy Skeete</h1>
-        </section>
+      <div className="page">
+        <main>
+          <section className="hero" id="top">
+            <h1>Messages by Elder Randy Skeete</h1>
+          </section>
 
-        <section id="watch" className="watch">
-          <VideoPlayer sermon={selected} />
-        </section>
+          <section id="watch" className="watch">
+            <VideoPlayer sermon={selected} />
+          </section>
 
-        <SermonGrid
-          sermons={sermons}
-          selectedId={selected?.id ?? null}
-          onSelect={handleSelect}
-          loading={loading}
-          error={error}
+          <SermonGrid
+            sermons={sermons}
+            selectedId={selected?.id ?? null}
+            onSelect={handleSelect}
+            loading={loading}
+            error={error}
+          />
+        </main>
+
+        <Footer
+          location={preaching?.text ?? "TBA"}
+          onUpdated={(record) => setPreaching(record)}
         />
-      </main>
-
-      <Footer
-        location={preaching?.text ?? "TBA"}
-        onUpdated={(record) => setPreaching(record)}
-      />
-    </div>
+      </div>
+    </>
   );
 }
