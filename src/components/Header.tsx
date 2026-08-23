@@ -1,4 +1,4 @@
-import logo from "../assets/logo.png";
+import logoMark from "../assets/logo-mark.png";
 
 type Props = {
   /** Current preaching location text from /api/preaching. */
@@ -7,26 +7,28 @@ type Props = {
 };
 
 /**
- * Sticky header: new photo logo + a thin live-status bar (the site “menu”).
+ * Sticky menu bar: portrait logo lockup on the left, live preaching status on the right.
+ * The wordmark is real text so it stays crisp and readable at every size.
  */
 export function Header({ location, loading = false }: Props) {
   const place = loading ? "Loading…" : location || "TBA";
 
   return (
     <header className="site-header">
-      <a className="brand" href="#top" aria-label="RandySkeete.com home">
-        <img className="brand-logo" src={logo} alt="RandySkeete.com" width="160" height="160" />
-      </a>
-
-      <nav className="status-nav" aria-label="Preaching status">
-        <p className="preaching-line" aria-live="polite">
-          <span className="live-dot" aria-hidden="true" />
-          <span className="sr-only">Live. </span>
-          <span className="preaching-copy">
-            Elder Skeete is preaching at <strong>{place}</strong>
+      <div className="menu-bar">
+        <a className="brand" href="#top">
+          <img className="brand-mark" src={logoMark} alt="" width="128" height="128" />
+          <span className="brand-word">
+            RandySkeete<span className="brand-tld">.com</span>
           </span>
+        </a>
+
+        <p className="status-chip" aria-live="polite">
+          <span className="live-dot" aria-hidden="true" />
+          <span className="status-label">Preaching at</span>
+          <span className="status-place">{place}</span>
         </p>
-      </nav>
+      </div>
     </header>
   );
 }

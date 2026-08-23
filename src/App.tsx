@@ -61,12 +61,7 @@ export default function App() {
 
       <main>
         <section className="hero" id="top">
-          <p className="eyebrow">Sermon library</p>
           <h1>Messages by Elder Randy Skeete</h1>
-          <p className="lede">
-            Watch sermons collected from YouTube. Each video is credited to the
-            channel that posted it.
-          </p>
         </section>
 
         <section id="watch" className="watch">
