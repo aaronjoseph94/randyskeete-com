@@ -103,6 +103,12 @@ async function fetchPlaylist(apiKey: string): Promise<Sermon[]> {
   return sermons;
 }
 
+function sortByPublishedDesc(sermons: Sermon[]) {
+  return [...sermons].sort(
+    (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
+  );
+}
+
 function isFresh(cached: CachePayload | null) {
   return Boolean(
     cached &&
@@ -116,7 +122,7 @@ export default async () => {
   const cached = await readJson<CachePayload>("sermons", "playlist");
   if (isFresh(cached)) {
     return json(
-      { sermons: cached!.sermons },
+      { sermons: sortByPublishedDesc(cached!.sermons) },
       200,
       { "Netlify-CDN-Cache-Control": "public, s-maxage=300, must-revalidate" },
     );
@@ -129,12 +135,12 @@ export default async () => {
 
   const apiKey = env("YOUTUBE_API_KEY");
   if (!apiKey) {
-    if (cached?.sermons?.length) return json({ sermons: cached.sermons });
+    if (cached?.sermons?.length) return json({ sermons: sortByPublishedDesc(cached.sermons) });
     return json({ error: "Sermons are temporarily unavailable." }, 500);
   }
 
   try {
-    const sermons = await fetchPlaylist(apiKey);
+    const sermons = sortByPublishedDesc(await fetchPlaylist(apiKey));
     await writeJson("sermons", "playlist", {
       version: CACHE_VERSION,
       fetchedAt: Date.now(),
@@ -142,7 +148,7 @@ export default async () => {
     });
     return json({ sermons });
   } catch {
-    if (cached?.sermons?.length) return json({ sermons: cached.sermons });
+    if (cached?.sermons?.length) return json({ sermons: sortByPublishedDesc(cached.sermons) });
     return json({ error: "Sermons are temporarily unavailable." }, 502);
   }
 };

@@ -26,30 +26,32 @@ export function SermonGrid({ sermons, selectedId, onSelect, loading, error }: Pr
         <p className="status">No sermons available yet.</p>
       ) : null}
 
-      <ul className="sermon-grid">
-        {sermons.map((sermon, index) => {
-          const selected = sermon.id === selectedId;
-          const thumbnail = safeThumbnail(sermon.thumbnail, sermon.id);
-          return (
-            <li key={`${sermon.id}-${index}`}>
-              <article className={selected ? "sermon-card selected" : "sermon-card"}>
-                <button type="button" className="sermon-hit" onClick={() => onSelect(sermon)}>
-                  {thumbnail ? <img src={thumbnail} alt="" /> : <span className="thumb-fallback" />}
-                  <span className="sermon-copy">
-                    <strong>{sermon.title}</strong>
-                    {sermon.publishedAt ? (
-                      <span className="date">{formatDate(sermon.publishedAt)}</span>
-                    ) : null}
-                  </span>
-                </button>
-                <p className="credit">
-                  <ChannelCredit channelName={sermon.channelName} channelId={sermon.channelId} />
-                </p>
-              </article>
-            </li>
-          );
-        })}
-      </ul>
+      {!loading && !error ? (
+        <ul className="sermon-grid">
+          {sermons.map((sermon) => {
+            const selected = sermon.id === selectedId;
+            const thumbnail = safeThumbnail(sermon.thumbnail, sermon.id);
+            return (
+              <li key={sermon.id}>
+                <article className={selected ? "sermon-card selected" : "sermon-card"}>
+                  <button type="button" className="sermon-hit" onClick={() => onSelect(sermon)}>
+                    {thumbnail ? <img src={thumbnail} alt="" /> : <span className="thumb-fallback" />}
+                    <span className="sermon-copy">
+                      <strong>{sermon.title}</strong>
+                      {sermon.publishedAt ? (
+                        <span className="date">{formatDate(sermon.publishedAt)}</span>
+                      ) : null}
+                    </span>
+                  </button>
+                  <p className="credit">
+                    <ChannelCredit channelName={sermon.channelName} channelId={sermon.channelId} />
+                  </p>
+                </article>
+              </li>
+            );
+          })}
+        </ul>
+      ) : null}
     </section>
   );
 }
