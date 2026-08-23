@@ -5,7 +5,7 @@
 export const PLAYLIST_ID = "PLEHUwFohE59Y-dMNNWFzFn1c7lfNYKzXt";
 export const YOUTUBE_REFERER = "https://randyskeete.com/";
 export const CACHE_TTL_MS = 6 * 60 * 60 * 1000;
-export const CACHE_VERSION = 5;
+export const CACHE_VERSION = 6;
 export const MAX_PREACHING_CHARS = 2000;
 export const MAX_BODY_BYTES = 8000;
 export const LOGIN_WINDOW_MS = 15 * 60 * 1000;

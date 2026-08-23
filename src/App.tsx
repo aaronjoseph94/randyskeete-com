@@ -57,7 +57,7 @@ export default function App() {
 
   return (
     <>
-      {/* Header sits outside .page so the navy bar spans the full viewport width. */}
+      {/* Header sits outside .page so the bar spans the full viewport width. */}
       <Header location={preaching?.text ?? "TBA"} loading={preachingLoading} />
 
       <div className="page">
