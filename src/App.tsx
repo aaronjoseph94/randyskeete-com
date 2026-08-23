@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { fetchSermons } from "./api/sermons";
 import { Footer } from "./components/Footer";
 import { Header } from "./components/Header";
+import { Ornament } from "./components/Ornament";
 import { PreachingWidget } from "./components/PreachingWidget";
 import { SermonGrid } from "./components/SermonGrid";
 import { VideoPlayer } from "./components/VideoPlayer";
@@ -61,6 +62,7 @@ export default function App() {
             Watch and listen to sermons collected from YouTube. Each video is
             credited to the channel that posted it.
           </p>
+          <Ornament />
         </section>
 
         <div className="layout">
