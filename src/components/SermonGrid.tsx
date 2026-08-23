@@ -6,57 +6,24 @@ import { ChannelCredit } from "./ChannelCredit";
 type Props = {
   sermons: Sermon[];
   selectedId: string | null;
-  query: string;
-  totalCount: number;
-  onQueryChange: (value: string) => void;
   onSelect: (sermon: Sermon) => void;
   loading: boolean;
   error: string | null;
 };
 
-/** Searchable grid of playlist sermons; selecting one scrolls to the player. */
-export function SermonGrid({
-  sermons,
-  selectedId,
-  query,
-  totalCount,
-  onQueryChange,
-  onSelect,
-  loading,
-  error,
-}: Props) {
+/** Grid of the latest playlist sermons; selecting one scrolls to the player. */
+export function SermonGrid({ sermons, selectedId, onSelect, loading, error }: Props) {
   return (
     <section id="sermons" className="sermons">
       <div className="section-heading">
-        <div>
-          <p className="eyebrow">Library</p>
-          <h2>All sermons</h2>
-        </div>
-        <label className="search">
-          <span className="sr-only">Search sermons</span>
-          <input
-            type="search"
-            value={query}
-            onChange={(event) => onQueryChange(event.target.value)}
-            placeholder="Search titles or channels"
-            autoComplete="off"
-          />
-        </label>
+        <h2>Latest Sermons</h2>
       </div>
 
       {loading ? <p className="status">Loading sermons…</p> : null}
       {error ? <p className="status error">{error}</p> : null}
 
-      {!loading && !error ? (
-        <p className="status" aria-live="polite">
-          {query.trim()
-            ? `${sermons.length} match${sermons.length === 1 ? "" : "es"}`
-            : `${totalCount} sermons`}
-        </p>
-      ) : null}
-
       {!loading && !error && sermons.length === 0 ? (
-        <p className="status">No sermons match that search.</p>
+        <p className="status">No sermons available yet.</p>
       ) : null}
 
       <ul className="sermon-grid">

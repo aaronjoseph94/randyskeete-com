@@ -2,7 +2,7 @@
  * Root app shell: loads sermons + preaching location, then composes the page.
  * Location is owned here so the header status line and footer editor stay in sync.
  */
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { getPreaching } from "./api/preaching";
 import { fetchSermons } from "./api/sermons";
 import { Footer } from "./components/Footer";
@@ -15,7 +15,6 @@ import type { PreachingRecord, Sermon } from "./lib/types";
 export default function App() {
   const [sermons, setSermons] = useState<Sermon[]>([]);
   const [selected, setSelected] = useState<Sermon | null>(null);
-  const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -51,17 +50,6 @@ export default function App() {
     return () => controller.abort();
   }, []);
 
-  const filtered = useMemo(() => {
-    const needle = query.trim().toLowerCase();
-    if (!needle) return sermons;
-    return sermons.filter((sermon) => {
-      return (
-        sermon.title.toLowerCase().includes(needle) ||
-        sermon.channelName.toLowerCase().includes(needle)
-      );
-    });
-  }, [query, sermons]);
-
   function handleSelect(sermon: Sermon) {
     setSelected(sermon);
     document.getElementById("watch")?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -86,11 +74,8 @@ export default function App() {
         </section>
 
         <SermonGrid
-          sermons={filtered}
+          sermons={sermons}
           selectedId={selected?.id ?? null}
-          query={query}
-          totalCount={sermons.length}
-          onQueryChange={setQuery}
           onSelect={handleSelect}
           loading={loading}
           error={error}

@@ -63,7 +63,7 @@ export function Footer({ location, onUpdated }: Props) {
           </a>
         </div>
         <div className="footer-col">
-          <h3>Writings</h3>
+          <h3>Resources</h3>
           <a
             className="footer-link"
             href="https://egwwritings.org/"
