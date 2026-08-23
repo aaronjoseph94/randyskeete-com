@@ -7,6 +7,7 @@ type Props = {
   sermon: Sermon | null;
 };
 
+/** YouTube embed for the selected sermon, with channel credit below. */
 export function VideoPlayer({ sermon }: Props) {
   const src = sermon ? embedUrl(sermon.id) : null;
 

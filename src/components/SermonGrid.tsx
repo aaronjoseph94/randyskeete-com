@@ -14,6 +14,7 @@ type Props = {
   error: string | null;
 };
 
+/** Searchable grid of playlist sermons; selecting one scrolls to the player. */
 export function SermonGrid({
   sermons,
   selectedId,
@@ -28,8 +29,8 @@ export function SermonGrid({
     <section id="sermons" className="sermons">
       <div className="section-heading">
         <div>
-          <p className="eyebrow">Sermons</p>
-          <h2>Listen and watch</h2>
+          <p className="eyebrow">Library</p>
+          <h2>All sermons</h2>
         </div>
         <label className="search">
           <span className="sr-only">Search sermons</span>

@@ -1,12 +1,16 @@
+/**
+ * Root app shell: loads sermons + preaching location, then composes the page.
+ * Location is owned here so the header status line and footer editor stay in sync.
+ */
 import { useEffect, useMemo, useState } from "react";
+import { getPreaching } from "./api/preaching";
 import { fetchSermons } from "./api/sermons";
 import { Footer } from "./components/Footer";
 import { Header } from "./components/Header";
-import { PreachingWidget } from "./components/PreachingWidget";
 import { SermonGrid } from "./components/SermonGrid";
 import { VideoPlayer } from "./components/VideoPlayer";
 import { messageFromUnknown } from "./lib/format";
-import type { Sermon } from "./lib/types";
+import type { PreachingRecord, Sermon } from "./lib/types";
 
 export default function App() {
   const [sermons, setSermons] = useState<Sermon[]>([]);
@@ -14,6 +18,9 @@ export default function App() {
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const [preaching, setPreaching] = useState<PreachingRecord | null>(null);
+  const [preachingLoading, setPreachingLoading] = useState(true);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -29,6 +36,16 @@ export default function App() {
       })
       .finally(() => {
         if (!controller.signal.aborted) setLoading(false);
+      });
+
+    getPreaching(controller.signal)
+      .then((record) => setPreaching(record))
+      .catch(() => {
+        if (controller.signal.aborted) return;
+        setPreaching({ text: "TBA", updatedAt: null });
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setPreachingLoading(false);
       });
 
     return () => controller.abort();
@@ -52,16 +69,15 @@ export default function App() {
 
   return (
     <div className="page">
-      <Header />
-      <main>
-        <PreachingWidget />
+      <Header location={preaching?.text ?? "TBA"} loading={preachingLoading} />
 
+      <main>
         <section className="hero" id="top">
-          <p className="eyebrow">Sermons from the Word</p>
+          <p className="eyebrow">Sermon library</p>
           <h1>Messages by Elder Randy Skeete</h1>
           <p className="lede">
-            Watch and listen to sermons collected from YouTube. Each video is
-            credited to the channel that posted it.
+            Watch sermons collected from YouTube. Each video is credited to the
+            channel that posted it.
           </p>
         </section>
 
@@ -80,7 +96,11 @@ export default function App() {
           error={error}
         />
       </main>
-      <Footer />
+
+      <Footer
+        location={preaching?.text ?? "TBA"}
+        onUpdated={(record) => setPreaching(record)}
+      />
     </div>
   );
 }
