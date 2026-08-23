@@ -1,3 +1,4 @@
+/** Site wordmark and in-page navigation. No personal names or YouTube handles. */
 export function Header() {
   return (
     <header className="site-header">

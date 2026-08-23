@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
+import { fetchSermons } from "./api/sermons";
 import { Footer } from "./components/Footer";
 import { Header } from "./components/Header";
 import { PreachingWidget } from "./components/PreachingWidget";
 import { SermonGrid } from "./components/SermonGrid";
 import { VideoPlayer } from "./components/VideoPlayer";
-import type { Sermon } from "./types";
+import { messageFromUnknown } from "./lib/format";
+import type { Sermon } from "./lib/types";
 
-function App() {
+export default function App() {
   const [sermons, setSermons] = useState<Sermon[]>([]);
   const [selected, setSelected] = useState<Sermon | null>(null);
   const [query, setQuery] = useState("");
@@ -14,18 +16,22 @@ function App() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("/api/sermons")
-      .then(async (response) => {
-        const data = (await response.json()) as { sermons?: Sermon[]; error?: string };
-        if (!response.ok) throw new Error(data.error || "Unable to load sermons.");
-        const list = data.sermons ?? [];
+    const controller = new AbortController();
+
+    fetchSermons(controller.signal)
+      .then((list) => {
         setSermons(list);
         setSelected(list[0] ?? null);
       })
       .catch((err: unknown) => {
-        setError(err instanceof Error ? err.message : "Unable to load sermons.");
+        if (controller.signal.aborted) return;
+        setError(messageFromUnknown(err, "Unable to load sermons."));
       })
-      .finally(() => setLoading(false));
+      .finally(() => {
+        if (!controller.signal.aborted) setLoading(false);
+      });
+
+    return () => controller.abort();
   }, []);
 
   const filtered = useMemo(() => {
@@ -68,6 +74,7 @@ function App() {
           sermons={filtered}
           selectedId={selected?.id ?? null}
           query={query}
+          totalCount={sermons.length}
           onQueryChange={setQuery}
           onSelect={handleSelect}
           loading={loading}
@@ -78,5 +85,3 @@ function App() {
     </div>
   );
 }
-
-export default App;

@@ -1,15 +1,18 @@
 import { useEffect, useState, type FormEvent } from "react";
-
-type Record = {
-  text: string;
-  updatedAt: string | null;
-};
+import {
+  confirmEditorSession,
+  getPreaching,
+  loginEditor,
+  logoutEditor,
+  savePreaching,
+} from "../api/preaching";
+import { messageFromUnknown } from "../lib/format";
+import type { PreachingRecord } from "../lib/types";
 
 const UNLOCKED_KEY = "preaching-unlocked";
-const PASSWORD_KEY = "preaching-password";
 
 export function PreachingWidget() {
-  const [record, setRecord] = useState<Record | null>(null);
+  const [record, setRecord] = useState<PreachingRecord | null>(null);
   const [error, setError] = useState("");
   const [showLogin, setShowLogin] = useState(false);
   const [unlocked, setUnlocked] = useState(false);
@@ -19,42 +22,46 @@ export function PreachingWidget() {
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    const storedPassword = sessionStorage.getItem(PASSWORD_KEY) ?? "";
-    if (sessionStorage.getItem(UNLOCKED_KEY) === "1" && storedPassword) {
-      setUnlocked(true);
-      setPassword(storedPassword);
-    }
+    const controller = new AbortController();
 
-    fetch("/api/preaching")
-      .then(async (response) => {
-        const data = (await response.json()) as Record & { error?: string };
-        if (!response.ok) throw new Error(data.error || "Unable to load this week’s location.");
+    getPreaching(controller.signal)
+      .then((data) => {
         setRecord(data);
         setDraft(data.text);
       })
       .catch((err: unknown) => {
-        setError(err instanceof Error ? err.message : "Unable to load this week’s location.");
+        if (controller.signal.aborted) return;
+        setError(messageFromUnknown(err, "Unable to load this week’s location."));
       });
+
+    if (sessionStorage.getItem(UNLOCKED_KEY) === "1") {
+      confirmEditorSession()
+        .then((ok) => {
+          if (ok) setUnlocked(true);
+          else sessionStorage.removeItem(UNLOCKED_KEY);
+        })
+        .catch(() => sessionStorage.removeItem(UNLOCKED_KEY));
+    }
+
+    return () => controller.abort();
   }, []);
+
+  function markUnlocked() {
+    setUnlocked(true);
+    setShowLogin(false);
+    setPassword("");
+    sessionStorage.setItem(UNLOCKED_KEY, "1");
+  }
 
   async function handleLogin(event: FormEvent) {
     event.preventDefault();
     setError("");
     setSaving(true);
     try {
-      const response = await fetch("/api/preaching", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password }),
-      });
-      const data = (await response.json()) as { error?: string };
-      if (!response.ok) throw new Error(data.error || "Incorrect password.");
-      setUnlocked(true);
-      setShowLogin(false);
-      sessionStorage.setItem(UNLOCKED_KEY, "1");
-      sessionStorage.setItem(PASSWORD_KEY, password);
+      await loginEditor(password);
+      markUnlocked();
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Incorrect password.");
+      setError(messageFromUnknown(err, "Incorrect password."));
     } finally {
       setSaving(false);
     }
@@ -66,21 +73,29 @@ export function PreachingWidget() {
     setSaved(false);
     setSaving(true);
     try {
-      const response = await fetch("/api/preaching", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password, text: draft }),
-      });
-      const data = (await response.json()) as Record & { error?: string };
-      if (!response.ok) throw new Error(data.error || "Unable to save.");
+      const data = await savePreaching(draft);
       setRecord(data);
       setDraft(data.text);
       setSaved(true);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Unable to save.");
+      const message = messageFromUnknown(err, "Unable to save.");
+      setError(message);
+      if (message.includes("log in")) {
+        setUnlocked(false);
+        setShowLogin(true);
+        sessionStorage.removeItem(UNLOCKED_KEY);
+      }
     } finally {
       setSaving(false);
     }
+  }
+
+  async function handleDone() {
+    await logoutEditor();
+    setUnlocked(false);
+    setShowLogin(false);
+    setSaved(false);
+    sessionStorage.removeItem(UNLOCKED_KEY);
   }
 
   return (
@@ -99,7 +114,9 @@ export function PreachingWidget() {
             Login
           </button>
         ) : (
-          <span className="editing-badge">Editing</span>
+          <button type="button" className="login-btn secondary" onClick={handleDone}>
+            Done
+          </button>
         )}
       </div>
 
@@ -115,7 +132,7 @@ export function PreachingWidget() {
               placeholder="Password"
             />
           </label>
-          <button type="submit" disabled={saving}>
+          <button type="submit" disabled={saving || !password}>
             {saving ? "Checking…" : "Unlock"}
           </button>
         </form>
@@ -128,6 +145,7 @@ export function PreachingWidget() {
             <textarea
               rows={4}
               value={draft}
+              maxLength={2000}
               onChange={(event) => setDraft(event.target.value)}
               placeholder="Church, city, and meeting times"
             />

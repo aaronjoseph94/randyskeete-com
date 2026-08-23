@@ -1,11 +1,16 @@
-import { channelUrl, formatDate, type Sermon } from "../types";
+import { formatDate } from "../lib/format";
+import type { Sermon } from "../lib/types";
+import { embedUrl } from "../lib/youtube";
+import { ChannelCredit } from "./ChannelCredit";
 
 type Props = {
   sermon: Sermon | null;
 };
 
 export function VideoPlayer({ sermon }: Props) {
-  if (!sermon) {
+  const src = sermon ? embedUrl(sermon.id) : null;
+
+  if (!sermon || !src) {
     return (
       <section className="player-block" aria-live="polite">
         <div className="player-frame empty">
@@ -20,25 +25,20 @@ export function VideoPlayer({ sermon }: Props) {
       <div className="player-frame">
         <iframe
           title={sermon.title}
-          src={`https://www.youtube.com/embed/${sermon.id}?rel=0`}
+          src={src}
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowFullScreen
+          referrerPolicy="strict-origin-when-cross-origin"
         />
       </div>
       <div className="player-meta">
         <h2>{sermon.title}</h2>
         <p>
-          {sermon.channelName ? (
-            <>
-              Posted on YouTube by{" "}
-              <a href={channelUrl(sermon.channelId)} target="_blank" rel="noreferrer">
-                {sermon.channelName}
-              </a>
-            </>
-          ) : (
-            "Posted on YouTube"
-          )}
-          {sermon.publishedAt ? ` · ${formatDate(sermon.publishedAt)}` : null}
+          <ChannelCredit
+            channelName={sermon.channelName}
+            channelId={sermon.channelId}
+            date={formatDate(sermon.publishedAt)}
+          />
         </p>
       </div>
     </section>

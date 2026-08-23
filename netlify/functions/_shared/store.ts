@@ -1,5 +1,8 @@
+/**
+ * Site-scoped JSON storage with a local .data fallback for `npm run dev`.
+ */
 import { getStore } from "@netlify/blobs";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 const DATA_DIR = path.join(process.cwd(), ".data");
@@ -31,5 +34,18 @@ export async function writeJson(storeName: string, key: string, value: unknown) 
   } catch {
     await mkdir(DATA_DIR, { recursive: true });
     await writeFile(filePath(storeName, key), JSON.stringify(value), "utf8");
+  }
+}
+
+export async function deleteKey(storeName: string, key: string) {
+  try {
+    const store = getStore({ name: storeName, consistency: "strong" });
+    await store.delete(key);
+  } catch {
+    try {
+      await unlink(filePath(storeName, key));
+    } catch {
+      // Nothing cached locally
+    }
   }
 }

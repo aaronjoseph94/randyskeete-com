@@ -1,3 +1,7 @@
+/**
+ * Read secrets from Netlify's env first, then process.env, then a local .env file.
+ * Never import this module from client-side code.
+ */
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 
@@ -26,11 +30,10 @@ export function env(name: string): string | undefined {
     const value = Netlify.env.get(name);
     if (value) return value;
   } catch {
-    // Local Vite / Node fallback
+    // Functions running under Vite still fall through to process.env / .env
   }
 
   if (process.env[name]) return process.env[name];
-
   loadLocalEnv();
   return process.env[name];
 }

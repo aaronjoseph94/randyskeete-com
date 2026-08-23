@@ -1,21 +1,20 @@
+/**
+ * GET /api/sermons — playlist items with the *uploader* credited, never the playlist owner.
+ * Results are cached in Blobs; CACHE_VERSION invalidates stale copies.
+ */
 import type { Config } from "@netlify/functions";
+import { CACHE_TTL_MS, CACHE_VERSION, PLAYLIST_ID, YOUTUBE_REFERER } from "./_shared/constants";
 import { env } from "./_shared/env";
-import { readJson, writeJson } from "./_shared/store";
+import { json } from "./_shared/http";
+import { deleteKey, readJson, writeJson } from "./_shared/store";
+import type { Sermon } from "./_shared/types";
 
-const PLAYLIST_ID = "PLEHUwFohE59Y-dMNNWFzFn1c7lfNYKzXt";
-const CACHE_TTL_MS = 6 * 60 * 60 * 1000;
 const SKIP_TITLES = new Set(["private video", "deleted video"]);
-
-export type Sermon = {
-  id: string;
-  title: string;
-  publishedAt: string;
-  thumbnail: string;
-  channelName: string;
-  channelId: string;
-};
+const VIDEO_ID = /^[\w-]{11}$/;
+const CHANNEL_ID = /^UC[\w-]{21,}$/;
 
 type CachePayload = {
+  version: number;
   fetchedAt: number;
   sermons: Sermon[];
 };
@@ -41,37 +40,38 @@ type PlaylistResponse = {
   error?: { message?: string };
 };
 
-function json(data: unknown, status = 200, extraHeaders: Record<string, string> = {}) {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: {
-      "Content-Type": "application/json",
-      "Cache-Control": status === 200 ? "public, max-age=300" : "no-store",
-      ...extraHeaders,
-    },
-  });
+function safeThumbnail(url: string | undefined, videoId: string) {
+  const fallback = `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+  if (!url) return fallback;
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol !== "https:") return fallback;
+    if (parsed.hostname !== "i.ytimg.com" && parsed.hostname !== "img.youtube.com") return fallback;
+    return url;
+  } catch {
+    return fallback;
+  }
 }
 
 function mapItem(item: PlaylistItem): Sermon | null {
   const snippet = item.snippet;
-  const id = snippet?.resourceId?.videoId;
-  const title = snippet?.title?.trim();
-  if (!id || !title || SKIP_TITLES.has(title.toLowerCase())) return null;
+  const id = snippet?.resourceId?.videoId ?? "";
+  const title = snippet?.title?.trim() ?? "";
+  if (!VIDEO_ID.test(id) || !title || SKIP_TITLES.has(title.toLowerCase())) return null;
 
-  const channelName = snippet.videoOwnerChannelTitle?.trim() ?? "";
-  const channelId = snippet.videoOwnerChannelId?.trim() ?? "";
+  const channelId = snippet?.videoOwnerChannelId?.trim() ?? "";
+  const channelName = snippet?.videoOwnerChannelTitle?.trim() ?? "";
 
   return {
     id,
     title,
-    publishedAt: snippet.publishedAt ?? "",
-    thumbnail:
-      snippet.thumbnails?.high?.url ||
-      snippet.thumbnails?.medium?.url ||
-      snippet.thumbnails?.default?.url ||
-      `https://i.ytimg.com/vi/${id}/hqdefault.jpg`,
+    publishedAt: snippet?.publishedAt ?? "",
+    thumbnail: safeThumbnail(
+      snippet?.thumbnails?.high?.url || snippet?.thumbnails?.medium?.url || snippet?.thumbnails?.default?.url,
+      id,
+    ),
     channelName,
-    channelId,
+    channelId: CHANNEL_ID.test(channelId) ? channelId : "",
   };
 }
 
@@ -87,14 +87,9 @@ async function fetchPlaylist(apiKey: string): Promise<Sermon[]> {
     url.searchParams.set("key", apiKey);
     if (pageToken) url.searchParams.set("pageToken", pageToken);
 
-    const response = await fetch(url, {
-      headers: { Referer: "https://randyskeete.com/" },
-    });
+    const response = await fetch(url, { headers: { Referer: YOUTUBE_REFERER } });
     const payload = (await response.json()) as PlaylistResponse;
-
-    if (!response.ok) {
-      throw new Error(payload.error?.message || `YouTube API error (${response.status})`);
-    }
+    if (!response.ok) throw new Error("YouTube playlist is unavailable.");
 
     for (const item of payload.items ?? []) {
       const sermon = mapItem(item);
@@ -108,28 +103,47 @@ async function fetchPlaylist(apiKey: string): Promise<Sermon[]> {
   return sermons;
 }
 
+function isFresh(cached: CachePayload | null) {
+  return Boolean(
+    cached &&
+      cached.version === CACHE_VERSION &&
+      Array.isArray(cached.sermons) &&
+      Date.now() - cached.fetchedAt < CACHE_TTL_MS,
+  );
+}
+
 export default async () => {
   const cached = await readJson<CachePayload>("sermons", "playlist");
-  const fresh = cached && Date.now() - cached.fetchedAt < CACHE_TTL_MS;
+  if (isFresh(cached)) {
+    return json(
+      { sermons: cached!.sermons },
+      200,
+      { "Netlify-CDN-Cache-Control": "public, s-maxage=300, must-revalidate" },
+    );
+  }
 
-  if (fresh) {
-    return json({ sermons: cached.sermons, cached: true });
+  // Drop a previous cache version so Blobs does not keep serving stale playlist JSON.
+  if (cached && cached.version !== CACHE_VERSION) {
+    await deleteKey("sermons", "playlist");
   }
 
   const apiKey = env("YOUTUBE_API_KEY");
   if (!apiKey) {
-    if (cached?.sermons?.length) return json({ sermons: cached.sermons, cached: true });
-    return json({ error: "YouTube API key is not configured." }, 500);
+    if (cached?.sermons?.length) return json({ sermons: cached.sermons });
+    return json({ error: "Sermons are temporarily unavailable." }, 500);
   }
 
   try {
     const sermons = await fetchPlaylist(apiKey);
-    await writeJson("sermons", "playlist", { fetchedAt: Date.now(), sermons });
-    return json({ sermons, cached: false });
-  } catch (error) {
-    if (cached?.sermons?.length) return json({ sermons: cached.sermons, cached: true });
-    const message = error instanceof Error ? error.message : "Unable to load sermons.";
-    return json({ error: message }, 502);
+    await writeJson("sermons", "playlist", {
+      version: CACHE_VERSION,
+      fetchedAt: Date.now(),
+      sermons,
+    });
+    return json({ sermons });
+  } catch {
+    if (cached?.sermons?.length) return json({ sermons: cached.sermons });
+    return json({ error: "Sermons are temporarily unavailable." }, 502);
   }
 };
 
