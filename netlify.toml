@@ -13,7 +13,7 @@
     Referrer-Policy = "strict-origin-when-cross-origin"
     X-Frame-Options = "DENY"
     Permissions-Policy = "camera=(), microphone=(), geolocation=()"
-    Content-Security-Policy = "default-src 'self'; script-src 'self' https://www.clarity.ms; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://i.ytimg.com https://img.youtube.com https://c.clarity.ms; frame-src https://www.youtube.com https://www.youtube-nocookie.com; connect-src 'self' https://*.clarity.ms; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' https://www.clarity.ms 'sha256-/MwMomoL6kOFpmp7auyv53ufiJuMUndAVdqq+9sQQ6g='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://i.ytimg.com https://img.youtube.com https://c.clarity.ms; frame-src https://www.youtube.com https://www.youtube-nocookie.com; connect-src 'self' https://*.clarity.ms; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'"
 
 [[headers]]
   for = "/assets/*"
